@@ -1819,7 +1819,7 @@ public class FileDataStorageManager {
 
     }
 
-    public ArrayList<OCShare> getSharesWithForAFile(String filePath, String accountName){
+    public ArrayList<OCShare> getPrivateSharesForAFile(String filePath, String accountName){
         // Condition
         String where = ProviderTableMeta.OCSHARES_PATH + "=?" + " AND "
                 + ProviderTableMeta.OCSHARES_ACCOUNT_OWNER + "=?"+ "AND"
@@ -1847,7 +1847,47 @@ public class FileDataStorageManager {
                 c = null;
             }
         }
-        ArrayList<OCShare> shares = new ArrayList<OCShare>();
+        ArrayList<OCShare> shares = new ArrayList<>();
+        OCShare share = null;
+        if (c != null) {
+            if (c.moveToFirst()) {
+                do {
+                    share = createShareInstance(c);
+                    shares.add(share);
+                    // }
+                } while (c.moveToNext());
+            }
+            c.close();
+        }
+
+        return shares;
+    }
+
+    public ArrayList<OCShare> getPublicSharesForAFile(String filePath, String accountName){
+        // Condition
+        String where = ProviderTableMeta.OCSHARES_PATH + "=?" + " AND "
+            + ProviderTableMeta.OCSHARES_ACCOUNT_OWNER + "=?"+ "AND"
+            + ProviderTableMeta.OCSHARES_SHARE_TYPE + "=? ";
+        String [] whereArgs = new String[]{ filePath, accountName ,
+            Integer.toString(ShareType.PUBLIC_LINK.getValue())};
+
+        Cursor c = null;
+        if (getContentResolver() != null) {
+            c = getContentResolver().query(
+                ProviderTableMeta.CONTENT_URI_SHARE,
+                null, where, whereArgs, null);
+        } else {
+            try {
+                c = getContentProviderClient().query(
+                    ProviderTableMeta.CONTENT_URI_SHARE,
+                    null, where, whereArgs, null);
+
+            } catch (RemoteException e) {
+                Log_OC.e(TAG, "Could not get list of shares with: " + e.getMessage());
+                c = null;
+            }
+        }
+        ArrayList<OCShare> shares = new ArrayList<>();
         OCShare share = null;
         if (c != null) {
             if (c.moveToFirst()) {

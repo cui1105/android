@@ -52,7 +52,7 @@ import com.owncloud.android.ui.fragment.EditShareFragment;
 import com.owncloud.android.ui.fragment.SearchShareesFragment;
 import com.owncloud.android.ui.fragment.ShareFileFragment;
 import com.owncloud.android.ui.fragment.ShareFragmentListener;
-import com.owncloud.android.utils.GetShareWithUsersAsyncTask;
+import com.owncloud.android.utils.GetSharesForFileAsyncTask;
 
 
 /**
@@ -208,7 +208,7 @@ public class ShareActivity extends FileActivity
         // Show loading
         showLoadingDialog(R.string.common_loading);
         // Get Users and Groups
-        GetShareWithUsersAsyncTask getTask = new GetShareWithUsersAsyncTask(this);
+        GetSharesForFileAsyncTask getTask = new GetSharesForFileAsyncTask(this);
         Object[] params = {getFile(), getAccount(), getStorageManager()};
         getTask.execute(params);
     }
